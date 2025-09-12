@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres
+    container_name: bots-info-service-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=bots
+    ports:
+      - "5434:5432"
+    volumes:
+      - botsinfoservicedata:/var/lib/postgresql/data
+    networks:
+      - default
+      - confbots-net
+
+  bots-info-service:
+    build:
+      context: .
+    container_name: bots-info-service
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    networks:
+      - default
+      - confbots-net
+
+volumes:
+  botsinfoservicedata:
+
+networks:
+  confbots-net:
+    external: true
