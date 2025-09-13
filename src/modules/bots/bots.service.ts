@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthBotDto, UpdateBotDto } from './bots.dto';
-import { AuthBotResponse } from './bots.responses';
-import { Bot } from '@prisma/client';
-import { nanoid } from 'nanoid';
+import { AuthBotDto } from './bots.dto';
+import { AuthBotResponse } from './bots.response';
 
 @Injectable()
 export class BotsService {
@@ -13,41 +11,23 @@ export class BotsService {
 
   async auth(dto: AuthBotDto): Promise<AuthBotResponse> {
     try {
-      let bot: Bot;
+      const { tgid, type } = dto;
 
-      const existsBot = await this.prisma.bot.findUnique({
-        where: { tgid: dto.tgid }
+      let bot = await this.prisma.bot.findUnique({
+        where: { tgid_type: { tgid, type } },
+        include: { channel: true }
       });
 
-      if (!existsBot) {
-        const newBot = await this.prisma.bot.create({
-          data: {
-            tgid: dto.tgid,
-            type: dto.type,
-            code: nanoid(6)
-          }
+      if (!bot) {
+        bot = await this.prisma.bot.create({
+          data: { tgid, type },
+          include: { channel: true }
         });
-
-        bot = newBot;
-      } else {
-        bot = existsBot;
       }
 
-      return { bot: bot }
+      return { bot };
     } catch (err) {
       this.logger.error(`Failed to auth bot: ${err.message}`, err.stack);
-      throw err;
-    }
-  }
-
-  async update(dto: UpdateBotDto) {
-    try {
-      return await this.prisma.bot.update({
-        where: { tgid: dto.tgid },
-        data: dto
-      });
-    } catch (err) {
-      this.logger.error(`Failed to update bot: ${err.message}`, err.stack);
       throw err;
     }
   }

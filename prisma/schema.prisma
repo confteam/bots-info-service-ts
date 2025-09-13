@@ -7,18 +7,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Channel {
+  id               Int    @id @default(autoincrement())
+  code             String @unique
+  channelId        String?
+  adminChatId      String?
+  discussionChatId String?
+
+  bots   Bot[]
+  users  UserChannel[]
+  takes  Take[]
+}
+
 model Bot {
-  id Int @default(autoincrement())
-  tgid String @unique
-  confession String?
-  chatId String?
-  channelId String?
-  type Type
-  code String
+  id        Int    @id @default(autoincrement())
+  tgid      String
+  type      Type
+  channel   Channel? @relation(fields: [channelId], references: [id])
+  channelId Int?
+
+  @@unique([tgid, type])
+}
+
+model User {
+  id      Int    @id @default(autoincrement())
+  tgid    String @unique
+  channels UserChannel[]
+}
+
+model UserChannel {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  channel   Channel @relation(fields: [channelId], references: [id])
+  channelId Int
+  role      String?   // например: "member", "banned", "moderator"
+
+  takes     Take[]
+
+  @@unique([userId, channelId])
+}
+
+enum Role {
+  MEMBER
+  BANNED
+  ADMIN
+}
+
+model Take {
+  id            Int         @id @default(autoincrement())
+  status        TakeStatus  @default(PENDING)
+  messageId     String
+  userChannel   UserChannel @relation(fields: [userChannelId], references: [id])
+  userChannelId Int
+  channel       Channel     @relation(fields: [channelId], references: [id])
+  channelId     Int
 }
 
 enum Type {
   TAKES
   MP
   MOD
+}
+
+enum TakeStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
