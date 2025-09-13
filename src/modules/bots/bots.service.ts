@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthBotDto } from './bots.dto';
+import { AuthBotDto, UpdateBotDto } from './bots.dto';
 import { AuthBotResponse } from './bots.responses';
 import { Bot } from '@prisma/client';
 import { nanoid } from 'nanoid';
@@ -36,6 +36,18 @@ export class BotsService {
       return { bot: bot }
     } catch (err) {
       this.logger.error(`Failed to auth bot: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async update(dto: UpdateBotDto) {
+    try {
+      return await this.prisma.bot.update({
+        where: { tgid: dto.tgid },
+        data: dto
+      });
+    } catch (err) {
+      this.logger.error(`Failed to update bot: ${err.message}`, err.stack);
       throw err;
     }
   }

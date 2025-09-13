@@ -1,5 +1,6 @@
 import { Type } from "@prisma/client";
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsOptional, IsString } from "class-validator";
+import { BotRequest } from "src/common/types/botRequest";
 
 export class AuthBotDto {
   @IsString()
@@ -7,4 +8,18 @@ export class AuthBotDto {
 
   @IsEnum(Type)
   type: Type;
+}
+
+export class UpdateBotDto extends BotRequest {
+  @IsOptional()
+  @IsString()
+  chatId: string;
+
+  @IsOptional()
+  @IsString()
+  channelId: string;
+
+  @IsOptional()
+  @IsString()
+  confession: string;
 }
