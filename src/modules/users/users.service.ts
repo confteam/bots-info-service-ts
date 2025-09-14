@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpsertUserDto } from './users.dto';
+import { UpdateUserDto, UpsertUserDto } from './users.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +11,10 @@ export class UsersService {
 
   async upsert(dto: UpsertUserDto) {
     try {
+      const user = await this.prisma.user.findUnique({
+        where: { tgid: dto.tgid }
+      });
+
       await this.prisma.user.upsert({
         where: { tgid: dto.tgid },
         // если нашли юзера
@@ -21,7 +25,7 @@ export class UsersService {
               // ищем связь пользователя с каналом
               where: {
                 userId_channelId: {
-                  userId: (await this.prisma.user.findUnique({ where: { tgid: dto.tgid } }))?.id ?? 0,
+                  userId: user?.id ?? 0,
                   channelId: dto.channelId
                 }
               },
@@ -33,11 +37,13 @@ export class UsersService {
                 role: dto.role
               }
             }
-          }
+          },
+          ...(user?.chatId === null && dto.chatId ? { chatId: dto.chatId } : {}),
         },
         // если не нашли создаем
         create: {
           tgid: dto.tgid,
+          chatId: dto.chatId || null,
           channels: {
             // привязываем к каналу и ставим роль
             create: {
@@ -49,6 +55,18 @@ export class UsersService {
       });
     } catch (err) {
       this.logger.error(`Failed to upsert user: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async update(tgid: string, data: Partial<UpdateUserDto>) {
+    try {
+      await this.prisma.user.update({
+        where: { tgid },
+        data
+      })
+    } catch (err) {
+      this.logger.error(`Failed to update user: ${err.message}`, err.stack);
       throw err;
     }
   }
