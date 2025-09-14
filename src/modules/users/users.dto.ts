@@ -1,11 +1,11 @@
 import { Role } from "@prisma/client";
-import { IsEnum, IsString } from "class-validator";
+import { IsEnum, IsNumber, IsString } from "class-validator";
 
 export class UpsertUserDto {
   @IsString()
   tgid: string;
 
-  @IsString()
+  @IsNumber()
   channelId: number;
 
   @IsEnum(Role)
