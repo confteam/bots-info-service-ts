@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateChannelDto, UpdateChannelDto } from './channels.dto';
+import { CreateChannelResponse } from './channels.response';
 
 @Injectable()
 export class ChannelsService {
@@ -14,7 +15,11 @@ export class ChannelsService {
     try {
       return await this.prisma.channel.update({
         where: { id: dto.id },
-        data: dto
+        data: {
+          adminChatId: dto.adminChatId || null,
+          channelId: dto.channelId || null,
+          discussionChatId: dto.discussionId || null
+        }
       })
     } catch (err) {
       this.logger.error(`Failed to update channel: ${err.message}`, err.stack);
@@ -22,14 +27,14 @@ export class ChannelsService {
     }
   }
 
-  async create(dto: CreateChannelDto) {
+  async create(dto: CreateChannelDto): Promise<CreateChannelResponse> {
     try {
       const channel = await this.prisma.channel.create({
         data: {
           code: dto.code,
-          adminChatId: dto.adminChatId,
-          channelId: dto.channelId,
-          discussionChatId: dto.disussionId
+          adminChatId: dto.adminChatId || null,
+          channelId: dto.channelId || null,
+          discussionChatId: dto.discussionId || null
         }
       });
 
@@ -38,7 +43,7 @@ export class ChannelsService {
         data: { channelId: channel.id }
       });
 
-      return channel;
+      return { channel };
     } catch (err) {
       this.logger.error(`Failed to create channel: ${err.message}`, err.stack);
       throw err;

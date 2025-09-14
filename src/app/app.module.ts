@@ -4,11 +4,13 @@ import { AppService } from './app.service';
 import { HttpLoggerMiddleware } from 'src/common/middlewares/httpLogger.middleware';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BotsModule } from 'src/modules/bots/bots.module';
+import { ChannelsModule } from 'src/modules/channels/channels.module';
 
 @Module({
   imports: [
     PrismaModule,
-    BotsModule
+    BotsModule,
+    ChannelsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -12,16 +12,12 @@ class ChannelChats {
 
   @IsOptional()
   @IsString()
-  disussionId?: string;
+  discussionId?: string;
 }
 
 export class UpdateChannelDto extends ChannelChats {
   @IsNumber()
   id: number;
-
-  @IsOptional()
-  @IsString()
-  code?: string;
 }
 
 export class CreateChannelDto extends ChannelChats {
