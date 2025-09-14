@@ -41,7 +41,7 @@ model UserChannel {
   userId    Int
   channel   Channel @relation(fields: [channelId], references: [id])
   channelId Int
-  role      String?   // например: "member", "banned", "moderator"
+  role      Role
 
   takes     Take[]
 
@@ -52,6 +52,7 @@ enum Role {
   MEMBER
   BANNED
   ADMIN
+  SUPERADMIN
 }
 
 model Take {

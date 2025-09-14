@@ -5,12 +5,14 @@ import { HttpLoggerMiddleware } from 'src/common/middlewares/httpLogger.middlewa
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { BotsModule } from 'src/modules/bots/bots.module';
 import { ChannelsModule } from 'src/modules/channels/channels.module';
+import { UsersModule } from 'src/modules/users/users.module';
 
 @Module({
   imports: [
     PrismaModule,
     BotsModule,
-    ChannelsModule
+    ChannelsModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],
