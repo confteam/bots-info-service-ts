@@ -29,3 +29,13 @@ export class UpdateUserDto {
   @IsString()
   role: Role;
 }
+
+export class GetUsersAnonimityDto {
+  @IsNumber()
+  channelId: number;
+
+  @IsString()
+  tgid: string;
+}
+
+export class ToggleUsersAnonimityDto extends GetUsersAnonimityDto { }

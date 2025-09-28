@@ -1,6 +1,7 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UpdateUserDto, UpsertUserDto } from './users.dto';
+import { ToggleUsersAnonimityDto, UpdateUserDto, UpsertUserDto } from './users.dto';
+import { ToggleUsersAnonimityResponse } from './users.responses';
 
 @Controller('users')
 export class UsersController {
@@ -14,5 +15,18 @@ export class UsersController {
   @Put()
   async update(@Body() body: UpdateUserDto) {
     await this.usersService.update(body.tgid, body);
+  }
+
+  @Get("get-anonimity")
+  async getAnonimity(
+    @Query("channelId") channelId: number,
+    @Query("tgid") tgid: string,
+  ) {
+    return await this.usersService.getAnonimity({ channelId, tgid });
+  }
+
+  @Post("toggle-anonimity")
+  async toggleAnonimity(@Body() body: ToggleUsersAnonimityDto): Promise<ToggleUsersAnonimityResponse> {
+    return await this.usersService.toggleAnonimity(body);
   }
 }

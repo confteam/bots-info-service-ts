@@ -1,6 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateUserDto, UpsertUserDto } from './users.dto';
+import { GetUsersAnonimityDto, ToggleUsersAnonimityDto, UpdateUserDto, UpsertUserDto } from './users.dto';
+import { GetUsersAnonimityResponse, ToggleUsersAnonimityResponse } from './users.responses';
+import { UserChannel } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -67,6 +69,55 @@ export class UsersService {
       })
     } catch (err) {
       this.logger.error(`Failed to update user: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  private async getUserChannelByUserTgId(tgid: string): Promise<UserChannel> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { tgid }
+      });
+
+      if (!user) throw new NotFoundException("User not found");
+
+      const userChannel = await this.prisma.userChannel.findFirst({
+        where: { userId: user.id }
+      });
+
+      if (!userChannel) throw new NotFoundException("UserChannel not found");
+
+      return userChannel;
+    } catch (err) {
+      this.logger.error(`Failed to get user channel: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async getAnonimity(body: GetUsersAnonimityDto): Promise<GetUsersAnonimityResponse> {
+    try {
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid);
+
+      return { anonimity: userChannel.anonimity }
+    } catch (err) {
+      this.logger.error(`Failed to get user's anonimity: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async toggleAnonimity(body: ToggleUsersAnonimityDto): Promise<ToggleUsersAnonimityResponse> {
+    try {
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid);
+      const newAnonimity = !userChannel.anonimity;
+
+      await this.prisma.userChannel.update({
+        where: { id: userChannel.id },
+        data: { anonimity: newAnonimity }
+      });
+
+      return { anonimity: newAnonimity }
+    } catch (err) {
+      this.logger.error(`Failed to toggle user's anonimity: ${err.message}`, err.stack);
       throw err;
     }
   }

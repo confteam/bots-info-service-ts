@@ -43,6 +43,7 @@ model UserChannel {
   channel   Channel @relation(fields: [channelId], references: [id])
   channelId Int
   role      Role
+  anonimity Boolean @default(true)
 
   takes     Take[]
 
