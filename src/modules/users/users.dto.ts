@@ -8,6 +8,7 @@ class UserDto {
   @IsString()
   chatId: string;
 
+  @IsOptional()
   @IsEnum(Role)
   role: Role;
 }
@@ -24,10 +25,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   chatId: string;
-
-  @IsOptional()
-  @IsString()
-  role: Role;
 }
 
 export class GetUsersAnonimityDto {
@@ -39,3 +36,22 @@ export class GetUsersAnonimityDto {
 }
 
 export class ToggleUsersAnonimityDto extends GetUsersAnonimityDto { }
+
+export class GetUsersRoleDto {
+  @IsString()
+  tgid: string;
+
+  @IsNumber()
+  channelId: number;
+}
+
+export class UpdateUsersRoleDto {
+  @IsString()
+  tgid: string;
+
+  @IsNumber()
+  channelId: number;
+
+  @IsEnum(Role)
+  role: Role;
+}

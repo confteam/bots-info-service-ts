@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GetUsersAnonimityDto, ToggleUsersAnonimityDto, UpdateUserDto, UpsertUserDto } from './users.dto';
-import { GetUsersAnonimityResponse, ToggleUsersAnonimityResponse } from './users.responses';
+import { GetUsersRoleDto, GetUsersAnonimityDto, ToggleUsersAnonimityDto, UpdateUserDto, UpsertUserDto, UpdateUsersRoleDto } from './users.dto';
+import { GetUsersRoleResponse, GetUsersAnonimityResponse, ToggleUsersAnonimityResponse } from './users.responses';
 import { UserChannel } from '@prisma/client';
 
 @Injectable()
@@ -73,7 +73,7 @@ export class UsersService {
     }
   }
 
-  private async getUserChannelByUserTgId(tgid: string): Promise<UserChannel> {
+  private async getUserChannelByUserTgId(tgid: string, channelId: number): Promise<UserChannel> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { tgid }
@@ -82,7 +82,7 @@ export class UsersService {
       if (!user) throw new NotFoundException("User not found");
 
       const userChannel = await this.prisma.userChannel.findFirst({
-        where: { userId: user.id }
+        where: { userId: user.id, channelId }
       });
 
       if (!userChannel) throw new NotFoundException("UserChannel not found");
@@ -96,7 +96,7 @@ export class UsersService {
 
   async getAnonimity(body: GetUsersAnonimityDto): Promise<GetUsersAnonimityResponse> {
     try {
-      const userChannel = await this.getUserChannelByUserTgId(body.tgid);
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid, body.channelId);
 
       return { anonimity: userChannel.anonimity }
     } catch (err) {
@@ -107,7 +107,7 @@ export class UsersService {
 
   async toggleAnonimity(body: ToggleUsersAnonimityDto): Promise<ToggleUsersAnonimityResponse> {
     try {
-      const userChannel = await this.getUserChannelByUserTgId(body.tgid);
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid, body.channelId);
       const newAnonimity = !userChannel.anonimity;
 
       await this.prisma.userChannel.update({
@@ -118,6 +118,33 @@ export class UsersService {
       return { anonimity: newAnonimity }
     } catch (err) {
       this.logger.error(`Failed to toggle user's anonimity: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async getUsersRole(body: GetUsersRoleDto): Promise<GetUsersRoleResponse> {
+    try {
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid, body.channelId);
+
+      return { role: userChannel.role }
+    } catch (err) {
+      this.logger.error(`Failed to get user's role: ${err.message}`, err.stack);
+      throw err;
+    }
+  }
+
+  async updateUsersRole(body: UpdateUsersRoleDto) {
+    try {
+      const userChannel = await this.getUserChannelByUserTgId(body.tgid, body.channelId);
+
+      await this.prisma.userChannel.update({
+        where: { id: userChannel.id },
+        data: {
+          role: body.role
+        }
+      });
+    } catch (err) {
+      this.logger.error(`Failed to update user's role: ${err.message}`, err.stack);
       throw err;
     }
   }

@@ -81,7 +81,7 @@ export class TakesService {
 
       if (!author) throw new NotFoundException("User not found");
 
-      return { chatId: author?.chatId }
+      return { chatId: author?.chatId, userId: author.tgid }
     } catch (err) {
       this.logger.error(`Failed to get take's author: ${err.message}`, err.stack);
       throw err;
