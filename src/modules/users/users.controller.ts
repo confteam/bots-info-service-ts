@@ -1,45 +1,38 @@
-import { Body, Controller, Get, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ToggleUserAnonimityDto, UpdateUserDto, UpdateUserRoleDto, UpsertUserDto } from './users.dto';
-import { Role } from '@prisma/client';
+import { UpdateUserDto, UpdateUserRoleDto, UpsertUserDto, UserChannelDto } from './users.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Post()
-  async upsert(@Body() body: UpsertUserDto) {
-    await this.usersService.upsert(body);
+  @Post(":tgid")
+  async upsert(@Param(":tgid") tgid: string, @Body() body: UpsertUserDto) {
+    await this.usersService.upsert(tgid, body);
   }
 
-  @Put()
-  async update(@Body() body: UpdateUserDto) {
-    await this.usersService.update(body.tgid, body);
+  @Patch(":tgid")
+  async update(@Param(":tgid") tgid: string, @Body() body: UpdateUserDto) {
+    await this.usersService.update(tgid, body);
   }
 
   @Get("anonimity")
-  async getUserAnonimity(
-    @Query("channelId") channelId: number,
-    @Query("tgid") tgid: string,
-  ) {
-    return await this.usersService.getUserAnonimity({ channelId, tgid });
+  async getUserAnonimity(@Query() query: UserChannelDto) {
+    return await this.usersService.getUserAnonimity(query);
   }
 
-  @Post("toggle-anonimity")
-  async toggleUserAnonimity(@Body() body: ToggleUserAnonimityDto): Promise<Role> {
-    return await this.usersService.toggleUserAnonimity(body);
+  @Patch("anonimity")
+  async toggleUserAnonimity(@Query() query: UserChannelDto): Promise<boolean> {
+    return await this.usersService.toggleUserAnonimity(query);
   }
 
   @Get("role")
-  async getUserRole(
-    @Query("channelId") channelId: number,
-    @Query("tgid") tgid: string,
-  ) {
-    return await this.usersService.getUserRole({ channelId, tgid });
+  async getUserRole(@Query() query: UserChannelDto) {
+    return await this.usersService.getUserRole(query);
   }
 
   @Patch("role")
-  async updateUserRole(@Body() body: UpdateUserRoleDto) {
-    await this.usersService.updateUserRole(body);
+  async updateUserRole(@Query() query: UserChannelDto, body: UpdateUserRoleDto) {
+    await this.usersService.updateUserRole(query, body);
   }
 }

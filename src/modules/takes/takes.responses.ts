@@ -1,4 +1,4 @@
 export class GetTakeAuthorResponse {
-  userId: string;
+  userTgId: string;
   chatId: string | null;
 }

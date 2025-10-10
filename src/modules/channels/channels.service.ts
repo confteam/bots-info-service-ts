@@ -9,12 +9,12 @@ export class ChannelsService {
     private readonly prisma: PrismaService
   ) { }
 
-  async update(dto: UpdateChannelDto) {
+  async update(id: number, dto: UpdateChannelDto) {
     return await this.prisma.channel.update({
-      where: { id: dto.id },
+      where: { id },
       data: {
         adminChatId: dto.adminChatId ?? null,
-        channelId: dto.channelId ?? null,
+        channelChatId: dto.channelChatId ?? null,
         discussionChatId: dto.discussionChatId ?? null
       }
     });
@@ -25,7 +25,7 @@ export class ChannelsService {
       data: {
         code: dto.code,
         adminChatId: dto.adminChatId ?? null,
-        channelId: dto.channelId ?? null,
+        channelChatId: dto.channelChatId ?? null,
         discussionChatId: dto.discussionChatId ?? null,
       },
     });

@@ -1,5 +1,5 @@
 import { Type } from '@prisma/client';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 class ChannelChats {
   @IsOptional()
@@ -8,17 +8,14 @@ class ChannelChats {
 
   @IsOptional()
   @IsString()
-  channelId?: string;
+  channelChatId?: string;
 
   @IsOptional()
   @IsString()
   discussionChatId?: string;
 }
 
-export class UpdateChannelDto extends ChannelChats {
-  @IsNumber()
-  id: number;
-}
+export class UpdateChannelDto extends ChannelChats { }
 
 export class CreateChannelDto extends ChannelChats {
   @IsString()

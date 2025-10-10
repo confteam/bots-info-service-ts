@@ -10,7 +10,7 @@ datasource db {
 model Channel {
   id               Int    @id @default(autoincrement())
   code             String @unique
-  channelId        String?
+  channelChatId        String?
   adminChatId      String?
   discussionChatId String?
 

@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTakeDto, GetTakeAuthorDto, UpdateTakeStatusDto } from './takes.dto';
+import { CreateTakeDto, TakeDto, UpdateTakeStatusDto } from './takes.dto';
 import { GetTakeAuthorResponse } from './takes.responses';
+import { Take } from '@prisma/client';
 
 @Injectable()
 export class TakesService {
@@ -27,11 +28,17 @@ export class TakesService {
     });
   }
 
-  async updateStatus(dto: UpdateTakeStatusDto): Promise<void> {
+  private async getTake({ channelId, messageId }: TakeDto): Promise<Take> {
     const take = await this.prisma.take.findFirst({
-      where: { messageId: dto.messageId },
+      where: { channelId, messageId }
     });
-    if (!take) throw new NotFoundException('Take not found');
+    if (!take) throw new NotFoundException("Take not found");
+
+    return take;
+  }
+
+  async updateStatus({ channelId, messageId }: TakeDto, dto: UpdateTakeStatusDto): Promise<void> {
+    const take = await this.getTake({ channelId, messageId });
 
     await this.prisma.take.update({
       where: { id: take.id },
@@ -39,22 +46,16 @@ export class TakesService {
     });
   }
 
-  async getTakeAuthor(dto: GetTakeAuthorDto): Promise<GetTakeAuthorResponse> {
-    const take = await this.prisma.take.findFirst({
-      where: { channelId: dto.channelId, messageId: dto.messageId },
-    });
-    if (!take) throw new NotFoundException('Take not found');
+  async getTakeAuthor({ messageId, channelId }: TakeDto) {
+    const take = await this.getTake({ messageId, channelId });
 
     const userChannel = await this.prisma.userChannel.findUnique({
       where: { id: take.userChannelId },
+      include: { user: true },
     });
-    if (!userChannel) throw new NotFoundException('UserChannel not found');
 
-    const author = await this.prisma.user.findUnique({
-      where: { id: userChannel.userId },
-    });
-    if (!author) throw new NotFoundException('User not found');
+    if (!userChannel || !userChannel.user) throw new NotFoundException('Author not found');
 
-    return { userId: author.tgid, chatId: author.chatId ?? null };
+    return { userTgId: userChannel.user.tgid, chatId: userChannel.user.chatId ?? null };
   }
 }

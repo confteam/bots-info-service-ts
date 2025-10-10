@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { TakesService } from './takes.service';
-import { CreateTakeDto, UpdateTakeStatusDto } from './takes.dto';
+import { CreateTakeDto, TakeDto, UpdateTakeStatusDto } from './takes.dto';
 
 @Controller('takes')
 export class TakesController {
@@ -11,16 +11,13 @@ export class TakesController {
     await this.takesService.create(body);
   }
 
-  @Patch()
-  async updateStatus(@Body() body: UpdateTakeStatusDto) {
-    await this.takesService.updateStatus(body);
+  @Patch("status")
+  async updateStatus(@Query() query: TakeDto, @Body() body: UpdateTakeStatusDto) {
+    await this.takesService.updateStatus(query, body);
   }
 
   @Get("author")
-  async getAuthor(
-    @Query("messageId") messageId: string,
-    @Query("channelId") channelId: number
-  ) {
-    return await this.takesService.getTakeAuthor({ messageId, channelId });
+  async getAuthor(@Query() query: TakeDto) {
+    return await this.takesService.getTakeAuthor(query);
   }
 }
