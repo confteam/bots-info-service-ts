@@ -46,7 +46,7 @@ export class TakesService {
     });
   }
 
-  async getTakeAuthor({ messageId, channelId }: TakeDto) {
+  async getTakeAuthor({ messageId, channelId }: TakeDto): Promise<GetTakeAuthorResponse> {
     const take = await this.getTake({ messageId, channelId });
 
     const userChannel = await this.prisma.userChannel.findUnique({

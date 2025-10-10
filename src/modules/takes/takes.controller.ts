@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { TakesService } from './takes.service';
 import { CreateTakeDto, TakeDto, UpdateTakeStatusDto } from './takes.dto';
+import { GetTakeAuthorResponse } from './takes.responses';
 
 @Controller('takes')
 export class TakesController {
@@ -17,7 +18,7 @@ export class TakesController {
   }
 
   @Get("author")
-  async getAuthor(@Query() query: TakeDto) {
+  async getTakeAuthor(@Query() query: TakeDto): Promise<GetTakeAuthorResponse> {
     return await this.takesService.getTakeAuthor(query);
   }
 }
