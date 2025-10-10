@@ -1,5 +1,5 @@
-import { TakeStatus } from "@prisma/client";
-import { IsEnum, IsNumber, IsString } from "class-validator";
+import { TakeStatus } from '@prisma/client';
+import { IsEnum, IsNumber, IsString } from 'class-validator';
 
 export class CreateTakeDto {
   @IsString()
@@ -20,7 +20,7 @@ export class UpdateTakeStatusDto {
   status: TakeStatus;
 }
 
-export class GetTakesAuthorDto {
+export class GetTakeAuthorDto {
   @IsString()
   messageId: string;
 

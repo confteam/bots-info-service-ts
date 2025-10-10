@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto, UpdateChannelDto } from './channels.dto';
-import { CreateChannelResponse } from './channels.response';
+import { Channel } from '@prisma/client';
 
 @Controller('channels')
 export class ChannelsController {
@@ -13,7 +13,7 @@ export class ChannelsController {
   }
 
   @Post()
-  async create(@Body() body: CreateChannelDto): Promise<CreateChannelResponse> {
+  async create(@Body() body: CreateChannelDto): Promise<Channel> {
     return await this.channelsService.create(body);
   }
 }

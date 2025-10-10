@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Patch, Post, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ToggleUsersAnonimityDto, UpdateUserDto, UpdateUsersRoleDto, UpsertUserDto } from './users.dto';
-import { ToggleUsersAnonimityResponse } from './users.responses';
+import { ToggleUserAnonimityDto, UpdateUserDto, UpdateUserRoleDto, UpsertUserDto } from './users.dto';
+import { Role } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -17,29 +17,29 @@ export class UsersController {
     await this.usersService.update(body.tgid, body);
   }
 
-  @Get("get-anonimity")
-  async getAnonimity(
+  @Get("anonimity")
+  async getUserAnonimity(
     @Query("channelId") channelId: number,
     @Query("tgid") tgid: string,
   ) {
-    return await this.usersService.getAnonimity({ channelId, tgid });
+    return await this.usersService.getUserAnonimity({ channelId, tgid });
   }
 
   @Post("toggle-anonimity")
-  async toggleAnonimity(@Body() body: ToggleUsersAnonimityDto): Promise<ToggleUsersAnonimityResponse> {
-    return await this.usersService.toggleAnonimity(body);
+  async toggleUserAnonimity(@Body() body: ToggleUserAnonimityDto): Promise<Role> {
+    return await this.usersService.toggleUserAnonimity(body);
   }
 
   @Get("role")
-  async getUsersRole(
+  async getUserRole(
     @Query("channelId") channelId: number,
     @Query("tgid") tgid: string,
   ) {
-    return await this.usersService.getUsersRole({ channelId, tgid });
+    return await this.usersService.getUserRole({ channelId, tgid });
   }
 
-  @Patch("update-role")
-  async updateUsersRole(@Body() body: UpdateUsersRoleDto) {
-    await this.usersService.updateUsersRole(body);
+  @Patch("role")
+  async updateUserRole(@Body() body: UpdateUserRoleDto) {
+    await this.usersService.updateUserRole(body);
   }
 }

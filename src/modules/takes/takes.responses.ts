@@ -1,4 +1,4 @@
-export class GetTakesAuthorResponse {
+export class GetTakeAuthorResponse {
   userId: string;
   chatId: string | null;
 }

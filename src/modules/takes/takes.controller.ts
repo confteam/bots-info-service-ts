@@ -16,11 +16,11 @@ export class TakesController {
     await this.takesService.updateStatus(body);
   }
 
-  @Get("find-author")
+  @Get("author")
   async getAuthor(
     @Query("messageId") messageId: string,
     @Query("channelId") channelId: number
   ) {
-    return await this.takesService.getTakesAuthor({ messageId, channelId });
+    return await this.takesService.getTakeAuthor({ messageId, channelId });
   }
 }

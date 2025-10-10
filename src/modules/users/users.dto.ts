@@ -1,16 +1,17 @@
-import { Role } from "@prisma/client";
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { Role } from '@prisma/client';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 class UserDto {
   @IsString()
   tgid: string;
 
+  @IsOptional()
   @IsString()
-  chatId: string;
+  chatId?: string;
 
   @IsOptional()
   @IsEnum(Role)
-  role: Role;
+  role?: Role;
 }
 
 export class UpsertUserDto extends UserDto {
@@ -24,10 +25,10 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  chatId: string;
+  chatId?: string;
 }
 
-export class GetUsersAnonimityDto {
+export class GetUserAnonimityDto {
   @IsNumber()
   channelId: number;
 
@@ -35,9 +36,9 @@ export class GetUsersAnonimityDto {
   tgid: string;
 }
 
-export class ToggleUsersAnonimityDto extends GetUsersAnonimityDto { }
+export class ToggleUserAnonimityDto extends GetUserAnonimityDto { }
 
-export class GetUsersRoleDto {
+export class GetUserRoleDto {
   @IsString()
   tgid: string;
 
@@ -45,7 +46,7 @@ export class GetUsersRoleDto {
   channelId: number;
 }
 
-export class UpdateUsersRoleDto {
+export class UpdateUserRoleDto {
   @IsString()
   tgid: string;
 
