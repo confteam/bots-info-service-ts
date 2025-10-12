@@ -1,4 +1,5 @@
 import { Role } from '@prisma/client';
+import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 class UserDto {
@@ -11,6 +12,7 @@ export class UserChannelDto {
   @IsString()
   tgid: string;
 
+  @Type(() => Number)
   @IsNumber()
   channelId: number;
 }

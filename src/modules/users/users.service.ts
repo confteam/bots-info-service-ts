@@ -36,6 +36,7 @@ export class UsersService {
   }
 
   async update(tgid: string, data: Partial<UpdateUserDto>) {
+    console.log("update")
     await this.prisma.user.update({ where: { tgid }, data });
   }
 
@@ -55,6 +56,7 @@ export class UsersService {
   }
 
   async toggleUserAnonimity({ tgid, channelId }: UserChannelDto): Promise<boolean> {
+    console.log("toggle user anonimity");
     const userChannel = await this.getUserChannel({ tgid, channelId });
     const anonimity = !userChannel.anonimity;
 
@@ -68,6 +70,8 @@ export class UsersService {
   }
 
   async updateUserRole({ tgid, channelId }: UserChannelDto, dto: UpdateUserRoleDto) {
+    console.log(typeof dto.role, dto.role);
+
     const userChannel = await this.getUserChannel({ tgid, channelId });
     await this.prisma.userChannel.update({ where: { id: userChannel.id }, data: { role: dto.role } });
   }

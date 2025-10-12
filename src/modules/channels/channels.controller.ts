@@ -8,8 +8,8 @@ export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) { }
 
   @Patch(":id")
-  async update(@Param(":id") id: number, @Body() body: UpdateChannelDto) {
-    return await this.channelsService.update(id, body);
+  async update(@Param("id") id: number, @Body() body: UpdateChannelDto) {
+    return await this.channelsService.update(id as number, body);
   }
 
   @Post()

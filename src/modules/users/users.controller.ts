@@ -7,12 +7,22 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post(":tgid")
-  async upsert(@Param(":tgid") tgid: string, @Body() body: UpsertUserDto) {
+  async upsert(@Param("tgid") tgid: string, @Body() body: UpsertUserDto) {
     await this.usersService.upsert(tgid, body);
   }
 
+  @Patch("anonimity")
+  async toggleUserAnonimity(@Query() query: UserChannelDto): Promise<boolean> {
+    return await this.usersService.toggleUserAnonimity(query);
+  }
+
+  @Patch("role")
+  async updateUserRole(@Query() query: UserChannelDto, @Body() body: UpdateUserRoleDto) {
+    await this.usersService.updateUserRole(query, body);
+  }
+
   @Patch(":tgid")
-  async update(@Param(":tgid") tgid: string, @Body() body: UpdateUserDto) {
+  async update(@Param("tgid") tgid: string, @Body() body: UpdateUserDto) {
     await this.usersService.update(tgid, body);
   }
 
@@ -21,18 +31,9 @@ export class UsersController {
     return await this.usersService.getUserAnonimity(query);
   }
 
-  @Patch("anonimity")
-  async toggleUserAnonimity(@Query() query: UserChannelDto): Promise<boolean> {
-    return await this.usersService.toggleUserAnonimity(query);
-  }
-
   @Get("role")
   async getUserRole(@Query() query: UserChannelDto) {
     return await this.usersService.getUserRole(query);
   }
 
-  @Patch("role")
-  async updateUserRole(@Query() query: UserChannelDto, body: UpdateUserRoleDto) {
-    await this.usersService.updateUserRole(query, body);
-  }
 }
