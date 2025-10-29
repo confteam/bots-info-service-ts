@@ -13,6 +13,7 @@ model Channel {
   channelChatId        String?
   adminChatId      String?
   discussionChatId String?
+  decorations String?
 
   bots   Bot[]
   users  UserChannel[]
