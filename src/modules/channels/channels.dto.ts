@@ -15,7 +15,11 @@ class ChannelChats {
   discussionChatId?: string;
 }
 
-export class UpdateChannelDto extends ChannelChats { }
+export class UpdateChannelDto extends ChannelChats {
+  @IsOptional()
+  @IsString()
+  decorations?: string;
+}
 
 export class CreateChannelDto extends ChannelChats {
   @IsString()

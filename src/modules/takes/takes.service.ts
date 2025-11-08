@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTakeDto, TakeDto, UpdateTakeStatusDto } from './takes.dto';
+import { CreateTakeDto, TakeIdDto, TakeMsgIdDto, UpdateTakeStatusDto } from './takes.dto';
 import { GetTakeAuthorResponse } from './takes.responses';
 import { Take } from '@prisma/client';
 
@@ -8,7 +8,7 @@ import { Take } from '@prisma/client';
 export class TakesService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async create(dto: CreateTakeDto): Promise<void> {
+  async create(dto: CreateTakeDto): Promise<number> {
     const user = await this.prisma.user.findUnique({
       where: { tgid: dto.userTgId },
     });
@@ -19,16 +19,27 @@ export class TakesService {
     });
     if (!userChannel) throw new NotFoundException('User is not a member of this channel');
 
-    await this.prisma.take.create({
+    const take = await this.prisma.take.create({
       data: {
         messageId: dto.messageId,
         userChannelId: userChannel.id,
         channelId: dto.channelId,
       },
     });
+
+    return take.id;
   }
 
-  private async getTake({ channelId, messageId }: TakeDto): Promise<Take> {
+  async getTakeById({ channelId, id }: TakeIdDto): Promise<Take> {
+    const take = await this.prisma.take.findFirst({
+      where: { channelId, id }
+    });
+    if (!take) throw new NotFoundException("Take not found");
+
+    return take;
+  }
+
+  async getTakeByMsgId({ channelId, messageId }: TakeMsgIdDto): Promise<Take> {
     const take = await this.prisma.take.findFirst({
       where: { channelId, messageId }
     });
@@ -37,8 +48,8 @@ export class TakesService {
     return take;
   }
 
-  async updateStatus({ channelId, messageId }: TakeDto, dto: UpdateTakeStatusDto): Promise<void> {
-    const take = await this.getTake({ channelId, messageId });
+  async updateStatus({ channelId, id }: TakeIdDto, dto: UpdateTakeStatusDto): Promise<void> {
+    const take = await this.getTakeById({ channelId, id });
 
     await this.prisma.take.update({
       where: { id: take.id },
@@ -46,8 +57,8 @@ export class TakesService {
     });
   }
 
-  async getTakeAuthor({ messageId, channelId }: TakeDto): Promise<GetTakeAuthorResponse> {
-    const take = await this.getTake({ messageId, channelId });
+  async getTakeAuthor({ id, channelId }: TakeIdDto): Promise<GetTakeAuthorResponse> {
+    const take = await this.getTakeById({ id, channelId });
 
     const userChannel = await this.prisma.userChannel.findUnique({
       where: { id: take.userChannelId },

@@ -13,6 +13,7 @@ export class ChannelsService {
     return await this.prisma.channel.update({
       where: { id },
       data: {
+        decorations: dto.decorations ?? null,
         adminChatId: dto.adminChatId ?? null,
         channelChatId: dto.channelChatId ?? null,
         discussionChatId: dto.discussionChatId ?? null

@@ -9,7 +9,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - botsinfoservicedata:/var/lib/postgresql/data
+      - botsinfoservicedata:/var/lib/postgresql
     networks:
       - default
       - confbots-net
