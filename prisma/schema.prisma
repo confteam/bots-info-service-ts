@@ -51,13 +51,6 @@ model UserChannel {
   @@unique([userId, channelId])
 }
 
-enum Role {
-  MEMBER
-  BANNED
-  ADMIN
-  SUPERADMIN
-}
-
 model Take {
   id            Int         @id @default(autoincrement())
   status        TakeStatus  @default(PENDING)
@@ -66,6 +59,23 @@ model Take {
   userChannelId Int
   channel       Channel     @relation(fields: [channelId], references: [id])
   channelId     Int
+
+  replys Reply[]
+}
+
+model Reply {
+  id Int @id @default(autoincrement())
+  userMessageId String
+  adminMessageId String
+  take Take @relation(fields: [takeId], references: [id])
+  takeId Int
+}
+
+enum Role {
+  MEMBER
+  BANNED
+  ADMIN
+  SUPERADMIN
 }
 
 enum Type {

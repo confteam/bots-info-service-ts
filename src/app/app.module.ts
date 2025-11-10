@@ -7,6 +7,7 @@ import { BotsModule } from 'src/modules/bots/bots.module';
 import { ChannelsModule } from 'src/modules/channels/channels.module';
 import { UsersModule } from 'src/modules/users/users.module';
 import { TakesModule } from 'src/modules/takes/takes.module';
+import { ReplysModule } from 'src/modules/replys/replys.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { TakesModule } from 'src/modules/takes/takes.module';
     BotsModule,
     ChannelsModule,
     UsersModule,
-    TakesModule
+    TakesModule,
+    ReplysModule
   ],
   controllers: [AppController],
   providers: [AppService],
