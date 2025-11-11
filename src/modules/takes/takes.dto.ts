@@ -1,6 +1,22 @@
 import { TakeStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+
+
+export class TakeQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  id?: number;
+
+  @IsOptional()
+  @IsString()
+  messageId?: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  channelId: number;
+}
 
 export class TakeIdDto {
   @Type(() => Number)
@@ -21,9 +37,19 @@ export class TakeMsgIdDto {
   channelId: number;
 }
 
-export class CreateTakeDto extends TakeMsgIdDto {
+export class CreateTakeDto {
   @IsString()
   userTgId: string;
+
+  @IsString()
+  adminMessageId: string;
+
+  @IsString()
+  userMessageId: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  channelId: number;
 }
 
 export class UpdateTakeStatusDto {

@@ -54,7 +54,8 @@ model UserChannel {
 model Take {
   id            Int         @id @default(autoincrement())
   status        TakeStatus  @default(PENDING)
-  messageId     String
+  userMessageId     String
+  adminMessageId String
   userChannel   UserChannel @relation(fields: [userChannelId], references: [id])
   userChannelId Int
   channel       Channel     @relation(fields: [channelId], references: [id])

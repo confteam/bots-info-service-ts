@@ -21,7 +21,8 @@ export class TakesService {
 
     const take = await this.prisma.take.create({
       data: {
-        messageId: dto.messageId,
+        userMessageId: dto.userMessageId,
+        adminMessageId: dto.adminMessageId,
         userChannelId: userChannel.id,
         channelId: dto.channelId,
       },
@@ -39,13 +40,16 @@ export class TakesService {
     return take;
   }
 
-  async getTakeByMsgId({ channelId, messageId }: TakeMsgIdDto): Promise<Take> {
-    const take = await this.prisma.take.findFirst({
-      where: { channelId, messageId }
+  async getTakeByMsgId({ channelId, messageId }: TakeMsgIdDto): Promise<Take | null> {
+    return await this.prisma.take.findFirst({
+      where: {
+        OR: [
+          { adminMessageId: messageId },
+          { userMessageId: messageId }
+        ],
+        channelId
+      },
     });
-    if (!take) throw new NotFoundException("Take not found");
-
-    return take;
   }
 
   async updateStatus({ channelId, id }: TakeIdDto, dto: UpdateTakeStatusDto): Promise<void> {

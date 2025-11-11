@@ -9,16 +9,14 @@ export class ReplysService {
     private readonly prisma: PrismaService
   ) { }
 
-  async create({ takeId, userMessageId, adminMessageId }: CreateReplyDto): Promise<number> {
-    const reply = await this.prisma.reply.create({
+  async create({ takeId, userMessageId, adminMessageId }: CreateReplyDto): Promise<Reply> {
+    return await this.prisma.reply.create({
       data: {
         takeId,
         userMessageId,
         adminMessageId,
       }
     });
-
-    return reply.id;
   }
 
   async getByMsgId(messageId: string): Promise<Reply | null> {

@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { TakesService } from './takes.service';
-import { CreateTakeDto, TakeIdDto, TakeMsgIdDto, UpdateTakeStatusDto } from './takes.dto';
+import { CreateTakeDto, TakeIdDto, TakeQueryDto, UpdateTakeStatusDto } from './takes.dto';
 import { GetTakeAuthorResponse } from './takes.responses';
 import { Take } from '@prisma/client';
 
@@ -24,7 +24,10 @@ export class TakesController {
   }
 
   @Get()
-  async getTakeByMsgId(@Query() query: TakeMsgIdDto): Promise<Take> {
-    return await this.takesService.getTakeByMsgId(query);
+  async getTake(@Query() { id, messageId, channelId }: TakeQueryDto): Promise<Take | null> {
+    if (id) return await this.takesService.getTakeById({ channelId, id });
+    if (messageId) return await this.takesService.getTakeByMsgId({ channelId, messageId });
+
+    throw new BadRequestException("Id or messageId are required");
   }
 }

@@ -8,7 +8,7 @@ export class ReplysController {
   constructor(private readonly replysService: ReplysService) { }
 
   @Post()
-  async create(@Body() body: CreateReplyDto): Promise<number> {
+  async create(@Body() body: CreateReplyDto): Promise<Reply> {
     return await this.replysService.create(body);
   }
 
